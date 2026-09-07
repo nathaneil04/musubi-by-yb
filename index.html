@@ -895,16 +895,45 @@ button, a {
             `).join('');
         }
 
-        function checkout() {
-            if (cart.length === 0) {
-                showToast("Your cart is empty!");
-                return;
-            }
-            showToast("Order placed successfully! Chef YB is cooking your order!");
+       async function checkout() {
+    if (cart.length === 0) {
+        showToast("Your cart is empty!");
+        return;
+    }
+
+    // Capture authenticated VIP email if logged in, otherwise default
+    const authEmail = document.getElementById('auth-email')?.value || '';
+    const authName = document.getElementById('auth-name')?.value || 'Guest Customer';
+
+    showToast("Submitting your order...");
+
+    try {
+        const response = await fetch('/api/place-order', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                customerName: authName,
+                customerEmail: authEmail,
+                orderType: 'Takeout',
+                items: cart
+            })
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+            showToast(`Order #${data.orderId} placed!`);
             cart = [];
             updateCartUI();
             toggleCartDrawer(false);
+        } else {
+            showToast(data.error || "Order placement failed.");
         }
+    } catch (err) {
+        console.error(err);
+        showToast("Server error placing order. Please try again.");
+    }
+}
 
         // --- CUSTOM BOX BUILDER CALCULATOR ---
         function calcCustomBox() {
