@@ -895,15 +895,17 @@ button, a {
             `).join('');
         }
 
-       async function checkout() {
+      async function checkout() {
     if (cart.length === 0) {
         showToast("Your cart is empty!");
         return;
     }
 
-    // Capture authenticated VIP email if logged in, otherwise default
-    const authEmail = document.getElementById('auth-email')?.value || '';
-    const authName = document.getElementById('auth-name')?.value || 'Guest Customer';
+    // Intercept checkout if buyer is not signed in
+    if (!currentUser) {
+        toggleCheckoutAuthModal(true);
+        return;
+    }
 
     showToast("Submitting your order...");
 
@@ -912,8 +914,8 @@ button, a {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                customerName: authName,
-                customerEmail: authEmail,
+                customerName: currentUser.name,
+                customerEmail: currentUser.email,
                 orderType: 'Takeout',
                 items: cart
             })
@@ -922,7 +924,7 @@ button, a {
         const data = await response.json();
 
         if (response.ok && data.success) {
-            showToast(`Order #${data.orderId} placed!`);
+            showToast(`Order #${data.orderId} placed for ${currentUser.name}!`);
             cart = [];
             updateCartUI();
             toggleCartDrawer(false);
@@ -935,6 +937,17 @@ button, a {
     }
 }
 
+function handleAuthSubmit(e) {
+    e.preventDefault();
+    const email = document.getElementById('auth-email').value;
+    const nameInput = document.getElementById('auth-name').value;
+    const name = (currentAuthMode === 'register' && nameInput) ? nameInput : email.split('@')[0];
+
+    currentUser = { name, email };
+
+    showToast(currentAuthMode === 'login' ? `Welcome back, ${name}!` : `VIP Club Account created!`);
+    navigateTo('home');
+}
         // --- CUSTOM BOX BUILDER CALCULATOR ---
         function calcCustomBox() {
             const base = document.getElementById('builder-base').value;
@@ -1035,7 +1048,33 @@ button, a {
             renderShopProducts();
             calcCustomBox();
             updateCartUI();
+// --- CART & APP STATE ---
+let cart = [];
+let activeCategory = 'all';
+let currentAuthMode = 'login';
+let currentUser = null; // Tracks logged-in buyer details { name, email }
 
+// --- CHECKOUT AUTH MODAL LOGIC ---
+function toggleCheckoutAuthModal(open) {
+    const modal = document.getElementById('checkout-auth-modal');
+    if (!modal) return;
+    if (open) {
+        modal.classList.remove('opacity-0', 'pointer-events-none');
+    } else {
+        modal.classList.add('opacity-0', 'pointer-events-none');
+    }
+}
+
+function handleCheckoutAuthSubmit(e) {
+    e.preventDefault();
+    const name = document.getElementById('order-customer-name').value;
+    const email = document.getElementById('order-customer-email').value;
+
+    currentUser = { name, email };
+    toggleCheckoutAuthModal(false);
+    showToast(`Signed in as ${name}`);
+    checkout(); // Automatically proceed to submit order after signing in
+}
         
         });
         // --- AD SLIDER ANIMATION ENGINE ---
@@ -1088,6 +1127,32 @@ button, a {
             clearInterval(adInterval);
             startAdAutoSlide();
         }
+        
     </script>
+    <!-- ORDER SIGN-IN MODAL -->
+<div id="checkout-auth-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300">
+    <div class="bg-brand-darker border border-white/10 rounded-2xl p-6 max-w-md w-full space-y-4 shadow-2xl">
+        <div class="flex items-center justify-between border-b border-white/10 pb-3">
+            <h3 class="font-display text-2xl text-white uppercase tracking-wide">Sign In to Complete Order</h3>
+            <button onclick="toggleCheckoutAuthModal(false)" class="text-gray-400 hover:text-white">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
+        <p class="text-xs text-gray-300">Please enter your details so Chef YB can track your order.</p>
+        <form id="checkout-auth-form" onsubmit="handleCheckoutAuthSubmit(event)" class="space-y-3">
+            <div>
+                <label class="block text-[10px] uppercase text-gray-400 font-bold mb-1">Your Full Name</label>
+                <input type="text" id="order-customer-name" required placeholder="Juan Dela Cruz" class="w-full bg-brand-dark border border-white/20 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-brand-orange">
+            </div>
+            <div>
+                <label class="block text-[10px] uppercase text-gray-400 font-bold mb-1">Email Address</label>
+                <input type="email" id="order-customer-email" required placeholder="name@example.com" class="w-full bg-brand-dark border border-white/20 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-brand-orange">
+            </div>
+            <button type="submit" class="w-full bg-brand-orange hover:bg-orange-600 text-white font-bold uppercase tracking-wider py-3 rounded-xl text-xs transition-all shadow-lg shadow-brand-orange/30">
+                Sign In & Place Order
+            </button>
+        </form>
+    </div>
+</div>
 </body>
 </html>
