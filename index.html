@@ -237,15 +237,15 @@ button, a {
         </div>
 
         <!-- MOBILE MENU -->
-        <div id="mobile-menu" class="hidden md:hidden bg-brand-dark px-6 pt-4 pb-6 space-y-4 border-b border-white/10 uppercase text-sm tracking-widest">
-            <button onclick="navigateTo('home'); toggleMobileMenu()" class="block w-full text-left text-gray-300 hover:text-brand-orange">Home</button>
-            <button onclick="navigateTo('shop'); toggleMobileMenu()" class="block w-full text-left text-gray-300 hover:text-brand-orange">Full Menu</button>
-            <button onclick="navigateTo('builder'); toggleMobileMenu()" class="block w-full text-left text-gray-300 hover:text-brand-orange">Box Builder</button>
-            <button onclick="navigateTo('platters'); toggleMobileMenu()" class="block w-full text-left text-gray-300 hover:text-brand-orange">Party Platters</button>
-            <button onclick="navigateTo('about'); toggleMobileMenu()" class="block w-full text-left text-gray-300 hover:text-brand-orange">Chef YB Story</button>
-            <button onclick="navigateTo('signin'); toggleMobileMenu()" class="block w-full text-left text-gray-300 hover:text-brand-orange">VIP Club</button>
-            <button onclick="toggleCartDrawer(true); toggleMobileMenu()" class="block w-full text-left text-brand-orange font-bold">Cart <span id="mobile-cart-badge">(0)</span></button>
-        </div>
+        <!-- MOBILE MENU -->
+<div id="mobile-menu" class="hidden md:hidden bg-brand-dark px-6 pt-4 pb-6 space-y-4 border-b border-white/10 uppercase text-sm tracking-widest">
+    <button onclick="navigateTo('home'); toggleMobileMenu()" class="nav-link block w-full text-left text-gray-300 hover:text-brand-orange transition-colors" data-page-target="home">Home</button>
+    <button onclick="navigateTo('shop'); toggleMobileMenu()" class="nav-link block w-full text-left text-gray-300 hover:text-brand-orange transition-colors" data-page-target="shop">Menu</button>
+    <button onclick="navigateTo('location'); toggleMobileMenu()" class="nav-link block w-full text-left text-gray-300 hover:text-brand-orange transition-colors" data-page-target="location">Live Location</button>
+    <button onclick="navigateTo('about'); toggleMobileMenu()" class="nav-link block w-full text-left text-gray-300 hover:text-brand-orange transition-colors" data-page-target="about">Chef YB Story</button>
+    <button onclick="navigateTo('signin'); toggleMobileMenu()" class="nav-link block w-full text-left text-gray-300 hover:text-brand-orange transition-colors" data-page-target="signin">VIP Club</button>
+    <button onclick="toggleCartDrawer(true); toggleMobileMenu()" class="block w-full text-left text-brand-orange font-bold">Cart <span id="mobile-cart-badge">(0)</span></button>
+</div>
     </header>
 
     <!-- MAIN CONTENT -->
