@@ -1,0 +1,1064 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MUSUBI BY YB — Fresh Handcrafted Musubi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            orange: '#EB5B38',
+                            dark: '#1B1C1E',
+                            light: '#F7F5F0',
+                            blue: '#D9381E', // Warm Chili Red accent
+                            darker: '#121315'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                        display: ['"Bebas Neue"', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .headline-shadow {
+            text-shadow: 0px 4px 12px rgba(0, 0, 0, 0.6);
+        }
+        /* Page Transition FX */
+        .page-view {
+            transition: opacity 0.25s ease-in-out;
+        }
+        .page-view.hidden {
+            display: none !important;
+            opacity: 0;
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #121315;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #EB5B38;
+            border-radius: 4px;
+        }
+        /* Animated Promo Ad Banner */
+        .ad-slide {
+            opacity: 0;
+            transition: opacity 0.7s ease-in-out, transform 0.7s ease-in-out;
+            transform: scale(0.98);
+            pointer-events: none;
+            position: absolute;
+            inset: 0;
+        }
+        .ad-slide.active {
+            opacity: 1;
+            transform: scale(1);
+            pointer-events: auto;
+            position: relative;
+        }
+        /* Animated Hero Background Image */
+@keyframes bgHeroZoom {
+    0% {
+        transform: scale(1) translate(0, 0);
+    }
+    50% {
+        transform: scale(1.08) translate(-0.5%, -0.5%);
+    }
+    100% {
+        transform: scale(1) translate(0, 0);
+    }
+}
+
+.animate-hero-bg {
+    animation: bgHeroZoom 20s ease-in-out infinite alternate;
+}
+/* =========================================================
+   UNIVERSAL DEVICE & RESPONSIVE COMPATIBILITY ENHANCEMENTS
+   ========================================================= */
+
+
+
+/* 2. Account for modern mobile browser notches & home indicators */
+body {
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    padding-left: env(safe-area-inset-left, 0px);
+    padding-right: env(safe-area-inset-right, 0px);
+}
+
+/* 3. Modern Dynamic Viewport Height (prevents mobile browser bar jump) */
+section, .min-h-screen {
+    min-height: 100vh;
+    min-height: 100dvh;
+}
+
+/* 4. Fluid Display Headlines (Prevents text clipping on small phones & scales up smoothly on 4K) */
+h1.font-display,
+.font-display.text-6xl,
+.font-display.text-7xl,
+.font-display.text-8xl {
+    font-size: clamp(2.25rem, 7vw + 1rem, 5.5rem) !important;
+    line-height: 1.05 !important;
+}
+
+.font-display.text-4xl,
+.font-display.text-5xl {
+    font-size: clamp(1.75rem, 5vw + 0.5rem, 3.5rem) !important;
+    line-height: 1.1 !important;
+}
+
+/* 5. Responsive Media & Responsive Map Container */
+img, iframe, svg, video {
+    max-width: 100%;
+    height: auto;
+}
+
+#page-location iframe {
+    width: 100%;
+    height: 100%;
+    min-height: 320px;
+}
+
+/* 6. Ensure Cart Drawer fits ultra-narrow screens without breaking */
+#cart-drawer {
+    width: 100%;
+    max-width: min(100vw, 28rem);
+}
+
+/* 7. Minimum Mobile Touch Target Fixes (Accessibility across touchscreens) */
+button, a {
+    min-height: 44px;
+    touch-action: manipulation;
+}
+
+/* 8. Extra Small Screens (e.g. Galaxy Fold outer screen, iPhone SE) */
+@media (max-width: 380px) {
+    .px-4 {
+        padding-left: 0.75rem !important;
+        padding-right: 0.75rem !important;
+    }
+    
+    .grid {
+        gap: 1rem !important;
+    }
+    
+    .ad-slide {
+        padding: 1.25rem !important;
+    }
+}
+    </style>
+</head>
+<body class="bg-brand-dark text-white font-sans antialiased selection:bg-brand-orange selection:text-white min-h-screen flex flex-col justify-between">
+
+    <!-- TOAST NOTIFICATION -->
+    <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 transition-all duration-300 bg-brand-orange text-white font-semibold text-xs tracking-wider uppercase px-5 py-3.5 rounded-xl shadow-2xl flex items-center space-x-3 border border-white/20 pointer-events-none">
+        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+        </svg>
+        <span id="toast-message">Notification message</span>
+    </div>
+
+    <!-- CART DRAWER OVERLAY -->
+    <div id="cart-drawer-overlay" onclick="toggleCartDrawer(false)" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 opacity-0 pointer-events-none transition-opacity duration-300"></div>
+    <aside id="cart-drawer" class="fixed top-0 right-0 h-full w-full max-w-md bg-brand-dark border-l border-white/10 z-50 transform translate-x-full transition-transform duration-300 flex flex-col justify-between shadow-2xl">
+        <div class="p-6 border-b border-white/10 flex items-center justify-between">
+            <div class="flex items-center space-x-2">
+                <svg class="w-5 h-5 text-brand-orange" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+                </svg>
+                <h2 class="font-display text-2xl uppercase tracking-wider text-white">Your Order</h2>
+            </div>
+            <button onclick="toggleCartDrawer(false)" class="text-gray-400 hover:text-white p-2 rounded-lg hover:bg-white/5 transition-colors">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+
+        <div id="cart-items-container" class="flex-1 overflow-y-auto p-6 space-y-4">
+            <!-- Dynamic Cart Items -->
+        </div>
+
+        <div class="p-6 border-t border-white/10 bg-brand-darker space-y-4">
+            <div class="flex items-center justify-between text-sm uppercase">
+                <span class="text-gray-400 font-medium">Subtotal</span>
+                <span id="cart-subtotal" class="font-bold text-white text-base">₱0.00</span>
+            </div>
+            <div class="flex items-center justify-between text-xs uppercase text-gray-400 border-b border-white/5 pb-3">
+                <span>Dine-In / Takeout</span>
+                <span class="text-brand-orange font-semibold">Calculated at Checkout</span>
+            </div>
+            <button onclick="checkout()" class="w-full bg-brand-orange hover:bg-orange-600 text-white font-bold tracking-widest uppercase py-3.5 rounded-xl text-xs transition-all shadow-lg shadow-brand-orange/30">
+                Place Order Now
+            </button>
+        </div>
+    </aside>
+
+    <!-- HEADER NAVIGATION -->
+<header class="sticky top-0 z-40 bg-transparent">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <nav class="hidden md:flex items-center space-x-8 text-xs font-semibold tracking-wider uppercase">
+                <button onclick="navigateTo('home')" class="nav-link text-brand-orange hover:text-brand-orange transition-colors" data-page-target="home">Home</button>
+                <button onclick="navigateTo('shop')" class="nav-link text-gray-300 hover:text-brand-orange transition-colors" data-page-target="shop">Menu</button>
+                <button onclick="navigateTo('location')" class="nav-link text-gray-300 hover:text-brand-orange transition-colors" data-page-target="location">Live Location</button>
+            </nav>
+
+            <button onclick="navigateTo('home')" class="flex items-center space-x-3 group">
+                <img src="ab57f417-5145-423a-9010-5291e62bf604.png" alt="Musubi By YB Logo" class="w-12 h-12 rounded-full border-2 border-white/20 group-hover:border-brand-orange transition-colors bg-white p-0.5 object-cover">
+                <span class="font-display text-2xl tracking-wider text-white group-hover:text-brand-orange transition-colors hidden sm:inline">MUSUBI <span class="text-brand-orange">BY YB</span></span>
+            </button>
+
+            <div class="hidden md:flex items-center space-x-8 text-xs font-semibold tracking-wider uppercase">
+                <button onclick="navigateTo('about')" class="nav-link text-gray-300 hover:text-brand-orange transition-colors" data-page-target="about">Chef YB Story</button>
+                <button onclick="navigateTo('signin')" class="nav-link text-gray-300 hover:text-brand-orange transition-colors" data-page-target="signin">VIP Club</button>
+                <button onclick="toggleCartDrawer(true)" class="flex items-center space-x-1 hover:text-brand-orange transition-colors">
+                    <span>Cart</span>
+                    <span id="cart-count-badge" class="text-brand-orange font-bold">(0)</span>
+                </button>
+            </div>
+
+            <button id="mobile-menu-btn" class="md:hidden text-gray-300 hover:text-white p-2" aria-label="Toggle Navigation">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+                </svg>
+            </button>
+            
+        </div>
+
+        <!-- MOBILE MENU -->
+        <div id="mobile-menu" class="hidden md:hidden bg-brand-dark px-6 pt-4 pb-6 space-y-4 border-b border-white/10 uppercase text-sm tracking-widest">
+            <button onclick="navigateTo('home'); toggleMobileMenu()" class="block w-full text-left text-gray-300 hover:text-brand-orange">Home</button>
+            <button onclick="navigateTo('shop'); toggleMobileMenu()" class="block w-full text-left text-gray-300 hover:text-brand-orange">Full Menu</button>
+            <button onclick="navigateTo('builder'); toggleMobileMenu()" class="block w-full text-left text-gray-300 hover:text-brand-orange">Box Builder</button>
+            <button onclick="navigateTo('platters'); toggleMobileMenu()" class="block w-full text-left text-gray-300 hover:text-brand-orange">Party Platters</button>
+            <button onclick="navigateTo('about'); toggleMobileMenu()" class="block w-full text-left text-gray-300 hover:text-brand-orange">Chef YB Story</button>
+            <button onclick="navigateTo('signin'); toggleMobileMenu()" class="block w-full text-left text-gray-300 hover:text-brand-orange">VIP Club</button>
+            <button onclick="toggleCartDrawer(true); toggleMobileMenu()" class="block w-full text-left text-brand-orange font-bold">Cart <span id="mobile-cart-badge">(0)</span></button>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main id="main-content" class="flex-1">
+        
+
+        <!-- PAGE 1: HOME -->
+        <div id="page-home" class="page-view">
+            <section class="relative min-h-[85vh] flex items-center justify-center overflow-hidden">
+    <!-- Animated Background Image Container -->
+    <div class="absolute inset-0 bg-cover bg-center animate-hero-bg pointer-events-none z-0" 
+         style="background-image: linear-gradient(180deg, rgba(27,28,30,0.7) 0%, rgba(27,28,30,0.95) 100%), url('abf04aa3-8f0f-412e-8a06-949c1f03bdfe.jpg');">
+    </div>
+
+    <!-- Hero Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full py-16 relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+        
+        <div class="lg:col-span-7 space-y-6">
+            <h1 class="font-display text-6xl sm:text-7xl lg:text-8xl leading-tight font-bold tracking-tight text-white headline-shadow uppercase">
+                HOME MADE <br>
+                <span class="text-brand-orange">MUSUBI</span> <br>
+                BY YB
+            </h1>
+            <p class="text-gray-300 max-w-md text-sm sm:text-base leading-relaxed">
+                Bawat Kagat, Panalong Sarap!
+            </p>
+            <div class="flex flex-wrap items-center gap-4 pt-4">
+                <button onclick="navigateTo('shop')" class="bg-brand-orange hover:bg-orange-600 text-white font-bold tracking-wider uppercase px-8 py-3.5 rounded-full text-xs transition-all shadow-lg shadow-brand-orange/30 transform hover:-translate-y-0.5">
+                    Order Now
+                </button>
+                <button onclick="navigateTo('about')" class="bg-brand-light hover:bg-white text-brand-dark font-bold tracking-wider uppercase px-8 py-3.5 rounded-full text-xs transition-all shadow-md transform hover:-translate-y-0.5">
+                    Meet Chef YB
+                </button>
+            </div>
+
+            <div class="pt-10 flex items-center space-x-4">
+                <div class="flex items-center space-x-2 bg-brand-dark/80 backdrop-blur-md border border-white/10 p-2 pr-4 rounded-xl">
+                    <img src="6786d4f8-d92a-49a2-9ddc-c7f5b0e55770.jpg" alt="Chef YB" class="w-12 h-12 rounded-lg object-cover">
+                    <button onclick="navigateTo('about')" class="bg-brand-light text-brand-dark p-2 rounded-lg hover:bg-white transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                        </svg>
+                    </button>
+                </div>
+                <p class="text-xs text-gray-300 max-w-xs leading-snug">
+                    Warm, homemade-style musubi, freshly pressed hot to order by Chef YB.
+                </p>
+            </div>
+        </div>
+
+        <div class="lg:col-span-5 flex justify-center lg:justify-end">
+            <div class="w-full max-w-xs bg-brand-dark/80 backdrop-blur-md rounded-2xl p-4 border border-white/10 shadow-2xl relative">
+                <div class="relative h-64 w-full rounded-xl overflow-hidden mb-4">
+                    <img src="ebb002e4-88a8-4898-ade5-2fd68db4d233.jpg" alt="Musubi w/ Egg" class="w-full h-full object-cover">
+                    <span class="absolute top-3 left-3 bg-brand-orange/90 text-white text-[10px] uppercase font-bold tracking-widest px-2.5 py-1 rounded-md">
+                        Best Seller
+                    </span>
+                </div>
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="font-display text-xl tracking-wide uppercase text-white">Musubi w/ Egg</h3>
+                        <p class="text-xs text-gray-400">Fortified Taste</p>
+                        <div class="flex items-center space-x-2 mt-1">
+                            <span class="text-brand-orange font-bold text-sm">₱45.00</span>
+                        </div>
+                    </div>
+                    <button onclick="addItemToCart(2)" class="w-10 h-10 rounded-full bg-brand-light text-brand-dark flex items-center justify-center hover:bg-brand-orange hover:text-white transition-colors shadow-lg">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+            <!-- ANIMATED PROMO ADS BANNER SECTION -->
+            <section class="py-12 bg-brand-darker border-t border-b border-white/10 overflow-hidden">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="relative rounded-3xl overflow-hidden border border-white/15 shadow-2xl bg-brand-dark min-h-[320px] flex items-center">
+                        
+                        <!-- Slide 1 -->
+                        <div class="ad-slide active w-full h-full flex flex-col md:flex-row items-center justify-between p-8 sm:p-12 bg-cover bg-center" style="background-image: linear-gradient(90deg, rgba(18,19,21,0.95) 0%, rgba(18,19,21,0.65) 100%), url('image_301882.jpg');">
+                            <div class="max-w-xl space-y-4 z-10">
+                                <span class="bg-brand-orange text-white text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full animate-pulse">Daily Special Musubi</span>
+                                <h3 class="font-display text-4xl sm:text-5xl uppercase tracking-wide text-white leading-tight">Buy now</h3>
+                                <p class="text-xs sm:text-sm text-gray-300">Order any 3 signature musubis today to serve your fresh, warm cooked musubi by Chef YB!</p>
+                                <button onclick="navigateTo('shop')" class="inline-block bg-brand-orange hover:bg-orange-600 text-white font-bold tracking-wider uppercase px-6 py-2.5 rounded-xl text-xs transition-transform transform hover:scale-105 shadow-lg shadow-brand-orange/30">Order Now</button>
+                            </div>
+                            <img src="ebb002e4-88a8-4898-ade5-2fd68db4d233.jpg" alt="Musubi Special Promo" class="w-40 h-40 sm:w-52 sm:h-52 object-cover rounded-2xl border-2 border-brand-orange/50 shadow-2xl mt-6 md:mt-0 z-10 transform -rotate-3 transition-transform hover:rotate-0 duration-300">
+                        </div>
+
+                        <!-- Slide 2 -->
+                        <div class="ad-slide w-full h-full flex flex-col md:flex-row items-center justify-between p-8 sm:p-12 bg-cover bg-center" style="background-image: linear-gradient(90deg, rgba(18,19,21,0.95) 0%, rgba(18,19,21,0.65) 100%), url('6786d4f8-d92a-49a2-9ddc-c7f5b0e55770.jpg');">
+                            <div class="max-w-xl space-y-4 z-10">
+                                <span class="bg-red-600 text-white text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full">Hot Pick 🔥</span>
+                                <h3 class="font-display text-4xl sm:text-5xl uppercase tracking-wide text-white leading-tight">Spicy Musubi w/ Egg</h3>
+                                <p class="text-xs sm:text-sm text-gray-300">Laced with Chef YB's house-made chili crunch oil paired with fluffy tamago layers and savory Spam.</p>
+                                <button onclick="navigateTo('shop')" class="inline-block bg-brand-orange hover:bg-orange-600 text-white font-bold tracking-wider uppercase px-6 py-2.5 rounded-xl text-xs transition-transform transform hover:scale-105 shadow-lg shadow-brand-orange/30">Try Spicy Musubi</button>
+                            </div>
+                            <img src="da2d3dfc-f7e6-4444-9aea-af66746d4d9d.jpg" alt="Spicy Musubi Ad" class="w-40 h-40 sm:w-52 sm:h-52 object-cover rounded-2xl border-2 border-brand-orange/50 shadow-2xl mt-6 md:mt-0 z-10 transform rotate-3 transition-transform hover:rotate-0 duration-300">
+                        </div>
+
+                         <!-- Slide 3 -->
+                        <div class="ad-slide w-full h-full flex flex-col md:flex-row items-center justify-between p-8 sm:p-12 bg-cover bg-center" style="background-image: linear-gradient(90deg, rgba(18,19,21,0.95) 0%, rgba(18,19,21,0.65) 100%), url('c0ca5e85-5280-46ea-9d2b-c0e16703119a.jpg');">
+                            <div class="max-w-xl space-y-4 z-10">
+                                <span class="bg-amber-500 text-brand-dark text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full">VIP Club Exclusive</span>
+                                <h3 class="font-display text-4xl sm:text-5xl uppercase tracking-wide text-white leading-tight">Join Musubi VIP Club</h3>
+                                <p class="text-xs sm:text-sm text-gray-300">Sign up today to earn reward points, unlock secret menu discounts, and enjoy priority cooking!</p>
+                                <button onclick="navigateTo('signin')" class="inline-block bg-white hover:bg-brand-light text-brand-dark font-bold tracking-wider uppercase px-6 py-2.5 rounded-xl text-xs transition-transform transform hover:scale-105 shadow-lg">Join VIP Now</button>
+                            </div>
+                            <img src="ab57f417-5145-423a-9010-5291e62bf604.png" alt="VIP Promo" class="w-40 h-40 sm:w-52 sm:h-52 object-contain bg-white/10 backdrop-blur-md rounded-2xl border-2 border-white/20 p-4 shadow-2xl mt-6 md:mt-0 z-10">
+                        </div>
+
+                        <!-- Slider Prev/Next Controls -->
+                        <button onclick="changeAdSlide(-1)" class="absolute left-4 top-1/2 -translate-y-1/2 z-20 bg-black/60 hover:bg-brand-orange text-white p-2.5 rounded-full border border-white/20 backdrop-blur-md transition-colors">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                        </button>
+                        <button onclick="changeAdSlide(1)" class="absolute right-4 top-1/2 -translate-y-1/2 z-20 bg-black/60 hover:bg-brand-orange text-white p-2.5 rounded-full border border-white/20 backdrop-blur-md transition-colors">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                        </button>
+
+                        <!-- Slider Dots -->
+                        <div class="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex space-x-2">
+                            <button onclick="goToAdSlide(0)" class="ad-dot w-8 h-3 rounded-full bg-brand-orange transition-all duration-300"></button>
+                            <button onclick="goToAdSlide(1)" class="ad-dot w-3 h-3 rounded-full bg-white/40 hover:bg-white transition-all duration-300"></button>
+                            <button onclick="goToAdSlide(2)" class="ad-dot w-3 h-3 rounded-full bg-white/40 hover:bg-white transition-all duration-300"></button>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+            <!-- FEATURES & INGREDIENTS BANNER -->
+            <section class="bg-brand-light text-brand-dark py-16 border-t border-b border-black/10">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                        <div class="lg:col-span-6">
+                            <h2 class="font-display text-5xl sm:text-6xl font-bold tracking-tight uppercase leading-none">
+                                MADE WITH <br>
+                                <span class="text-brand-orange">UNCOMPROMISING</span> <br>
+                                INGREDIENTS
+                            </h2>
+                        </div>
+                        <div class="lg:col-span-6 space-y-6">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div class="bg-white p-4 rounded-xl border border-black/5 shadow-sm">
+                                    <span class="text-brand-orange font-bold text-sm uppercase">01. Premium Spam</span>
+                                    <p class="text-xs text-gray-600 mt-1">Pan-seared in sweet savory glaze for max caramelization.</p>
+                                </div>
+                                <div class="bg-white p-4 rounded-xl border border-black/5 shadow-sm">
+                                    <span class="text-brand-orange font-bold text-sm uppercase">02. Fluffy Egg Layer</span>
+                                    <p class="text-xs text-gray-600 mt-1">Seasoned tamago-style egg cooked fresh throughout the day.</p>
+                                </div>
+                                <div class="bg-white p-4 rounded-xl border border-black/5 shadow-sm">
+                                    <span class="text-brand-orange font-bold text-sm uppercase">03. Spicy Glaze</span>
+                                    <p class="text-xs text-gray-600 mt-1">Chef YB's house-made chili flake crunch blend for chili lovers.</p>
+                                </div>
+                                <div class="bg-white p-4 rounded-xl border border-black/5 shadow-sm">
+                                    <span class="text-brand-orange font-bold text-sm uppercase">04. Crispy Nori</span>
+                                    <p class="text-xs text-gray-600 mt-1">Crisp roasted seaweed strip binding each savory bite together.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- CORE FEATURED PRODUCTS SECTION -->
+            <section class="bg-brand-dark py-24">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-end mb-16">
+                        <div class="lg:col-span-6">
+                            <h2 class="font-display text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight uppercase leading-none text-white">
+                                SIGNATURE <br>
+                                <span class="text-brand-orange">MUSUBI</span> <br>
+                                CREATIONS
+                            </h2>
+                        </div>
+                        <div class="lg:col-span-6 lg:flex lg:flex-col lg:items-end justify-between space-y-6">
+                            <p class="font-display text-xl sm:text-2xl tracking-wide uppercase text-gray-200">
+                                Grab your favorite quick bite or try them all!
+                            </p>
+                            <button onclick="navigateTo('shop')" class="bg-brand-orange hover:bg-orange-600 text-white font-bold tracking-wider uppercase px-8 py-3 rounded-md text-xs transition-colors">
+                                View Full Menu
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8" id="home-featured-grid">
+                        <!-- Populated by JavaScript -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- HIGHLIGHT STATS BANNER -->
+            <section class="bg-brand-light text-brand-dark py-16 border-t border-black/10">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                        <div class="lg:col-span-7">
+                            <h2 class="font-display text-5xl sm:text-6xl font-bold tracking-tight uppercase leading-none">
+                                HUNGRY FOR <br>
+                                <span class="text-brand-orange">MORE?</span>
+                            </h2>
+                        </div>
+                        <div class="lg:col-span-5 flex items-center justify-between bg-white p-8 rounded-2xl border border-black/5 shadow-md">
+                            <div>
+                                <div class="font-display text-6xl font-bold text-brand-orange">1K+</div>
+                                <p class="text-xs text-gray-600 max-w-xs mt-2 font-medium">
+                                    Over 1,000+ Musubis homemade-style and enjoyed by our musubi lovers!
+                                </p>
+                            </div>
+                            <button onclick="navigateTo('shop')" class="w-12 h-12 rounded-full bg-brand-dark text-white flex items-center justify-center hover:bg-brand-orange transition-colors">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- PAGE 2: FULL MENU / SHOP -->
+        <div id="page-shop" class="page-view hidden">
+            <section class="bg-brand-dark py-16 border-b border-white/10">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+                        <div>
+                            <span class="text-brand-orange uppercase font-bold text-xs tracking-widest">Our Selection</span>
+                            <h1 class="font-display text-5xl sm:text-6xl font-bold uppercase tracking-tight text-white mt-1">
+                                MUSUBI BY YB MENU
+                            </h1>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-3">
+                            <input type="text" id="shop-search" oninput="filterShopProducts()" placeholder="Search menu items..." class="bg-brand-darker border border-white/20 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-brand-orange w-48 sm:w-64">
+                            <select id="shop-sort" onchange="filterShopProducts()" class="bg-brand-darker border border-white/20 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-brand-orange">
+                                <option value="default">Sort by: Featured</option>
+                                <option value="low-high">Price: Low to High</option>
+                                <option value="high-low">Price: High to Low</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center space-x-2 overflow-x-auto pb-4 mb-8 border-b border-white/10 text-xs font-semibold tracking-wider uppercase">
+                        <button onclick="setShopCategory('all')" class="shop-tab-btn px-5 py-2.5 rounded-full bg-brand-orange text-white" data-cat="all">All Items</button>
+                        <button onclick="setShopCategory('classic')" class="shop-tab-btn px-5 py-2.5 rounded-full bg-brand-darker text-gray-400 hover:text-white" data-cat="classic">Musubi Specials</button>
+                    </div>
+
+                    <div id="shop-products-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                        <!-- Dynamic Menu Products -->
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- PAGE 5: ABOUT CHEF YB -->
+        <div id="page-about" class="page-view hidden">
+            <section class="bg-brand-dark py-20 border-b border-white/10">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                        <div class="lg:col-span-6 space-y-6">
+                            <span class="text-brand-orange font-bold text-xs uppercase tracking-widest">Our Culinary Story</span>
+                            <h1 class="font-display text-6xl sm:text-7xl font-bold uppercase tracking-tight text-white leading-none">
+                                MADE BY <br>
+                                <span class="text-brand-orange">CHEF YB</span>
+                            </h1>
+                            <p class="text-gray-300 text-sm leading-relaxed">
+                                MUSUBI BY YB was born from a simple passion: bringing real, warm, savory, and accessible street food comfort to everyone. Chef YB perfects every single element — from slicing glazed Spam to folding soft tamago layers and wrapping crisp Nori.
+                            </p>
+                            <div class="pt-4 grid grid-cols-3 gap-6 text-center">
+                                <div class="bg-brand-darker p-4 rounded-xl border border-white/10">
+                                    <div class="font-display text-3xl font-bold text-brand-orange">₱35</div>
+                                    <div class="text-[10px] text-gray-400 uppercase mt-1">Starting Price</div>
+                                </div>
+                                <div class="bg-brand-darker p-4 rounded-xl border border-white/10">
+                                    <div class="font-display text-3xl font-bold text-brand-orange">100%</div>
+                                    <div class="text-[10px] text-gray-400 uppercase mt-1">Cooked Fresh</div>
+                                </div>
+                                <div class="bg-brand-darker p-4 rounded-xl border border-white/10">
+                                    <div class="font-display text-3xl font-bold text-brand-orange">★★★★★</div>
+                                    <div class="text-[10px] text-gray-400 uppercase mt-1">Flavor Rating</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="lg:col-span-6 flex justify-center">
+                            <img src="6786d4f8-d92a-49a2-9ddc-c7f5b0e55770.jpg" alt="Chef YB holding Musubi" class="rounded-2xl border border-white/10 shadow-2xl object-cover w-full h-[450px]">
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="bg-brand-light text-brand-dark py-20">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6">
+                    <h2 class="font-display text-5xl font-bold uppercase tracking-tight">Our Quality Promise</h2>
+                    <p class="max-w-2xl mx-auto text-sm text-gray-700 leading-relaxed">
+                        No cold pre-made snacks sitting under heat lamps. Every order is pressed on demand so you experience warm, fragrant rice and crispy nori every single time.
+                    </p>
+                </div>
+            </section>
+        </div>
+
+        <!-- PAGE 6: SIGN IN / VIP CLUB -->
+        <div id="page-signin" class="page-view hidden">
+            <section class="bg-brand-dark py-20 min-h-[80vh] flex items-center justify-center">
+                <div class="max-w-md w-full mx-auto px-4">
+                    <div class="bg-brand-darker border border-white/10 rounded-2xl p-8 shadow-2xl space-y-6">
+                        
+                        <div class="flex border-b border-white/10 pb-4 justify-around text-sm uppercase font-bold tracking-wider">
+                            <button id="auth-tab-login" onclick="switchAuthMode('login')" class="text-brand-orange border-b-2 border-brand-orange pb-2">Sign In</button>
+                            <button id="auth-tab-register" onclick="switchAuthMode('register')" class="text-gray-400 hover:text-white pb-2">Join VIP Club</button>
+                        </div>
+
+                        <form id="auth-form" onsubmit="handleAuthSubmit(event)" class="space-y-4">
+                            <div id="name-field-group" class="hidden">
+                                <label class="block text-xs uppercase text-gray-400 font-medium mb-1">Full Name</label>
+                                <input type="text" id="auth-name" placeholder="Juan Dela Cruz" class="w-full bg-brand-dark border border-white/20 rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-brand-orange">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs uppercase text-gray-400 font-medium mb-1">Email Address</label>
+                                <input type="email" id="auth-email" required placeholder="musubilover@gmail.com" class="w-full bg-brand-dark border border-white/20 rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-brand-orange">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs uppercase text-gray-400 font-medium mb-1">Password</label>
+                                <input type="password" id="auth-password" required placeholder="••••••••" class="w-full bg-brand-dark border border-white/20 rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-brand-orange">
+                            </div>
+
+                            <button type="submit" id="auth-submit-btn" class="w-full bg-brand-orange hover:bg-orange-600 text-white font-bold tracking-widest uppercase py-3.5 rounded-xl text-xs transition-all shadow-lg shadow-brand-orange/30 mt-2">
+                                Sign In
+                            </button>
+                        </form>
+
+                        <div class="text-center">
+                            <a href="#" onclick="showToast('Reset password instructions sent to your email.'); return false;" class="text-[11px] text-gray-400 hover:text-brand-orange uppercase tracking-wider">Forgot password?</a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+<!-- PAGE: LIVE LOCATION & TRACKER -->
+<div id="page-location" class="page-view hidden">
+    <section class="bg-brand-dark py-16 border-b border-white/10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-2xl mx-auto mb-10 space-y-3">
+                
+                    
+                </span>
+                <h1 class="font-display text-5xl sm:text-6xl font-bold uppercase tracking-tight text-white">
+                    FIND MUSUBI <span class="text-brand-orange">BY YB</span>
+                </h1>
+                <p class="text-gray-300 text-xs sm:text-sm">
+                    Track our exact location for pickup or order drop-off directions in real time.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                <!-- Location Details Card -->
+                <div class="lg:col-span-4 bg-brand-darker border border-white/10 rounded-2xl p-6 space-y-6 shadow-2xl">
+                    <div class="space-y-2">
+                        <span class="text-brand-orange font-bold text-xs uppercase tracking-widest"> MUSUBI BY YB's Location</span>
+                        <h3 class="font-display text-2xl text-white uppercase">Purok 3 Namnama Area</h3>
+                        <p class="text-xs text-gray-300 leading-relaxed">
+                            Barangay Santa Ines, Paniqui, Tarlac, Philippines
+                        </p>
+                    </div>
+
+                    <div class="border-t border-b border-white/10 py-4 space-y-3 text-xs text-gray-300">
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-400 uppercase font-medium">Store Status</span>
+                            <span class="text-green-400 font-semibold flex items-center space-x-1">
+                                <span class="w-2 h-2 rounded-full bg-green-400 inline-block"></span>
+                                <span>Open & Cooking</span>
+                            </span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-400 uppercase font-medium">Serving Area</span>
+                            <span class="text-white font-semibold">Paniqui, Tarlac</span>
+                        </div>
+                    </div>
+
+                    <a href="https://www.google.com/maps/search/?api=1&query=Barangay+Santa+Ines+Paniqui+Tarlac" 
+                       target="_blank" 
+                       rel="noopener noreferrer"
+                       class="block w-full text-center bg-brand-orange hover:bg-orange-600 text-white font-bold py-3.5 rounded-xl text-xs uppercase tracking-wider transition-all shadow-lg shadow-brand-orange/20">
+                        Get Directions ↗
+                    </a>
+                </div>
+
+                <!-- Live Map Embed Container -->
+                <div class="lg:col-span-8 bg-brand-darker border border-white/10 rounded-2xl overflow-hidden shadow-2xl h-[450px] relative">
+                    <iframe 
+                        title="Musubi By YB Location Map"
+                        src="https://maps.google.com/maps?q=Barangay%20Santa%20Ines,%20Paniqui,%20Tarlac&t=&z=16&ie=UTF8&iwloc=&output=embed" 
+                        width="100%" 
+                        height="100%" 
+                        style="border:0;" 
+                        allowfullscreen="" 
+                        loading="lazy" 
+                        referrerpolicy="no-referrer-when-downgrade">
+                    </iframe>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-brand-darker text-gray-400 py-12 border-t border-white/10 text-xs">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-6">
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="navigateTo('home')">
+                <img src="ab57f417-5145-423a-9010-5291e62bf604.png" alt="Musubi Logo" class="w-8 h-8 rounded-full bg-white p-0.5 object-cover">
+                <span class="text-white font-semibold uppercase tracking-wider">MUSUBI BY YB</span>
+            </div>
+            <p>&copy; 2026 MUSUBI BY YB. All rights reserved.</p>
+            <div class="flex space-x-6 uppercase font-medium">
+                <button onclick="navigateTo('about')" class="hover:text-white transition-colors">Privacy Policy</button>
+                <button onclick="navigateTo('about')" class="hover:text-white transition-colors">Terms of Service</button>
+            </div>
+        </div>
+    </footer>
+
+    <!-- SCRIPT ENGINE -->
+    <script>
+        // --- PRODUCT DATABASE ---
+        const PRODUCTS = [
+            { 
+                id: 1, 
+                name: "Regular Musubi", 
+                category: "classic", 
+                price: 35.00, 
+                subtitle: "Classic Favorite",
+                image: "c0ca5e85-5280-46ea-9d2b-c0e16703119a.jpg", 
+                badge: "Classic" 
+            },
+            { 
+                id: 2, 
+                name: "Musubi w/ Egg", 
+                category: "classic", 
+                price: 45.00, 
+                subtitle: "Fortified Taste",
+                image: "ebb002e4-88a8-4898-ade5-2fd68db4d233.jpg", 
+                badge: "Popular" 
+            },
+            { 
+                id: 3, 
+                name: "Spicy Musubi w/ Egg", 
+                category: "classic", 
+                price: 45.00, 
+                subtitle: "Hot but Salty",
+                image: "da2d3dfc-f7e6-4444-9aea-af66746d4d9d.jpg", 
+                badge: "Hot 🔥" 
+            },
+            
+        ];
+
+        // --- CART & APP STATE ---
+        let cart = [];
+        let activeCategory = 'all';
+        let currentAuthMode = 'login';
+
+        // --- CLIENT NAVIGATION ENGINE ---
+        function navigateTo(pageId) {
+            document.querySelectorAll('.page-view').forEach(view => {
+                view.classList.add('hidden');
+            });
+
+            const target = document.getElementById(`page-${pageId}`);
+            if (target) {
+                target.classList.remove('hidden');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+
+            document.querySelectorAll('.nav-link').forEach(btn => {
+                if (btn.dataset.pageTarget === pageId) {
+                    btn.classList.add('text-brand-orange');
+                    btn.classList.remove('text-gray-300');
+                } else {
+                    btn.classList.remove('text-brand-orange');
+                    btn.classList.add('text-gray-300');
+                }
+            });
+        }
+
+        // --- RENDER PRODUCTS ---
+        function renderHomeFeatured() {
+            const grid = document.getElementById('home-featured-grid');
+            if (!grid) return;
+            const coreMusubis = PRODUCTS.filter(p => p.id <= 3);
+            grid.innerHTML = coreMusubis.map(p => `
+                <div class="bg-brand-darker border border-white/10 rounded-2xl overflow-hidden group hover:border-brand-orange/50 transition-all duration-300 shadow-xl">
+                    <div class="relative h-64 overflow-hidden bg-gray-900">
+                        <img src="${p.image}" alt="${p.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        <span class="absolute top-3 left-3 bg-brand-orange/90 text-white text-[10px] uppercase font-bold tracking-widest px-2.5 py-1 rounded">
+                            ${p.badge}
+                        </span>
+                    </div>
+                    <div class="p-5 space-y-3">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h3 class="font-display text-2xl uppercase tracking-wider text-white">${p.name}</h3>
+                                <p class="text-xs text-gray-400 font-medium">${p.subtitle}</p>
+                            </div>
+                            <span class="bg-brand-dark text-brand-orange font-bold text-sm px-3 py-1 rounded-md border border-white/10">₱${p.price.toFixed(2)}</span>
+                        </div>
+                        <button onclick="addItemToCart(${p.id})" class="w-full bg-brand-orange hover:bg-orange-600 text-white font-bold py-2.5 rounded-xl text-xs uppercase tracking-wider transition-colors flex items-center justify-center space-x-2">
+                            <span>+ Add To Order</span>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderShopProducts() {
+            const grid = document.getElementById('shop-products-grid');
+            if (!grid) return;
+
+            const searchVal = document.getElementById('shop-search')?.value.toLowerCase() || '';
+            const sortVal = document.getElementById('shop-sort')?.value || 'default';
+
+            let filtered = PRODUCTS.filter(p => {
+                const matchesCat = activeCategory === 'all' || p.category === activeCategory;
+                const matchesSearch = p.name.toLowerCase().includes(searchVal) || p.subtitle.toLowerCase().includes(searchVal);
+                return matchesCat && matchesSearch;
+            });
+
+            if (sortVal === 'low-high') filtered.sort((a,b) => a.price - b.price);
+            if (sortVal === 'high-low') filtered.sort((a,b) => b.price - a.price);
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `<div class="col-span-full py-12 text-center text-gray-400 text-xs uppercase tracking-wider">No menu items matching your search.</div>`;
+                return;
+            }
+
+            grid.innerHTML = filtered.map(p => `
+                <div class="bg-brand-darker border border-white/10 rounded-2xl overflow-hidden group hover:border-brand-orange/50 transition-all duration-300">
+                    <div class="relative h-56 overflow-hidden bg-gray-900">
+                        <img src="${p.image}" alt="${p.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        <span class="absolute top-3 left-3 bg-brand-orange/90 text-white text-[10px] uppercase font-bold tracking-widest px-2.5 py-1 rounded">
+                            ${p.badge}
+                        </span>
+                    </div>
+                    <div class="p-5 space-y-3">
+                        <div>
+                            <h3 class="font-display text-xl uppercase text-white tracking-wide">${p.name}</h3>
+                            <p class="text-xs text-gray-400">${p.subtitle}</p>
+                        </div>
+                        <div class="flex items-center justify-between pt-2 border-t border-white/5">
+                            <span class="font-bold text-brand-orange text-base">₱${p.price.toFixed(2)}</span>
+                            <button onclick="addItemToCart(${p.id})" class="bg-brand-light text-brand-dark hover:bg-brand-orange hover:text-white px-4 py-2 rounded-lg text-xs uppercase font-bold transition-colors">
+                                + Add
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function setShopCategory(cat) {
+            activeCategory = cat;
+            document.querySelectorAll('.shop-tab-btn').forEach(btn => {
+                if (btn.dataset.cat === cat) {
+                    btn.classList.add('bg-brand-orange', 'text-white');
+                    btn.classList.remove('bg-brand-darker', 'text-gray-400');
+                } else {
+                    btn.classList.remove('bg-brand-orange', 'text-white');
+                    btn.classList.add('bg-brand-darker', 'text-gray-400');
+                }
+            });
+            renderShopProducts();
+        }
+
+        function filterShopProducts() {
+            renderShopProducts();
+        }
+
+        // --- CART DRAWER LOGIC ---
+        function toggleCartDrawer(open) {
+            const overlay = document.getElementById('cart-drawer-overlay');
+            const drawer = document.getElementById('cart-drawer');
+
+            if (open) {
+                overlay.classList.remove('opacity-0', 'pointer-events-none');
+                drawer.classList.remove('translate-x-full');
+            } else {
+                overlay.classList.add('opacity-0', 'pointer-events-none');
+                drawer.classList.add('translate-x-full');
+            }
+        }
+
+        function addItemToCart(productId) {
+            const prod = PRODUCTS.find(p => p.id === productId);
+            if (!prod) return;
+
+            const existingIndex = cart.findIndex(item => item.id === productId);
+            if (existingIndex > -1) {
+                cart[existingIndex].qty += 1;
+            } else {
+                cart.push({ ...prod, qty: 1 });
+            }
+
+            updateCartUI();
+            showToast(`Added "${prod.name}" to order`);
+        }
+
+        function updateQuantity(index, delta) {
+            if (cart[index]) {
+                cart[index].qty += delta;
+                if (cart[index].qty <= 0) {
+                    cart.splice(index, 1);
+                }
+            }
+            updateCartUI();
+        }
+
+        function updateCartUI() {
+            const container = document.getElementById('cart-items-container');
+            const totalCount = cart.reduce((sum, item) => sum + item.qty, 0);
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+
+            document.getElementById('cart-count-badge').innerText = `(${totalCount})`;
+            document.getElementById('mobile-cart-badge').innerText = `(${totalCount})`;
+            document.getElementById('cart-subtotal').innerText = `₱${subtotal.toFixed(2)}`;
+
+            if (cart.length === 0) {
+                container.innerHTML = `<div class="text-center py-20 text-gray-400 text-xs uppercase tracking-wider">Your order is empty.</div>`;
+                return;
+            }
+
+            container.innerHTML = cart.map((item, index) => `
+                <div class="flex items-center space-x-4 bg-brand-darker p-3 rounded-xl border border-white/10">
+                    <img src="${item.image}" alt="${item.name}" class="w-16 h-16 rounded-lg object-cover">
+                    <div class="flex-1">
+                        <h4 class="font-display text-base text-white uppercase">${item.name}</h4>
+                        <span class="text-brand-orange text-xs font-bold">₱${(item.price * item.qty).toFixed(2)}</span>
+                    </div>
+                    <div class="flex items-center space-x-2 bg-brand-dark px-2 py-1 rounded-lg border border-white/10">
+                        <button onclick="updateQuantity(${index}, -1)" class="text-gray-400 hover:text-white px-1">-</button>
+                        <span class="text-xs font-bold text-white px-1">${item.qty}</span>
+                        <button onclick="updateQuantity(${index}, 1)" class="text-gray-400 hover:text-white px-1">+</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function checkout() {
+            if (cart.length === 0) {
+                showToast("Your cart is empty!");
+                return;
+            }
+            showToast("Order placed successfully! Chef YB is cooking your order!");
+            cart = [];
+            updateCartUI();
+            toggleCartDrawer(false);
+        }
+
+        // --- CUSTOM BOX BUILDER CALCULATOR ---
+        function calcCustomBox() {
+            const base = document.getElementById('builder-base').value;
+            const addon = document.getElementById('builder-addon').value;
+            const drink = document.getElementById('builder-drink').value;
+
+            let total = 0;
+            let nameParts = [];
+
+            if (base === 'regular') { total += 35; nameParts.push('Regular Musubi'); }
+            else if (base === 'egg') { total += 45; nameParts.push('Musubi w/ Egg'); }
+            else if (base === 'spicy') { total += 45; nameParts.push('Spicy Musubi w/ Egg'); }
+
+            if (addon === 'cheese') { total += 15; nameParts.push('Cheese'); }
+            else if (addon === 'furikake') { total += 10; nameParts.push('Extra Furikake'); }
+            else if (addon === 'kimchi') { total += 25; nameParts.push('Side Kimchi'); }
+
+            if (drink === 'tea') { total += 25; nameParts.push('Iced Green Tea'); }
+            else if (drink === 'miso') { total += 30; nameParts.push('Hot Miso'); }
+
+            document.getElementById('builder-rec-title').innerText = nameParts.join(' + ');
+            document.getElementById('builder-total-price').innerText = `₱${total.toFixed(2)}`;
+        }
+
+        function addCustomComboToCart() {
+            const title = document.getElementById('builder-rec-title').innerText;
+            const priceText = document.getElementById('builder-total-price').innerText.replace('₱', '');
+            const price = parseFloat(priceText);
+
+            const customId = Date.now();
+            cart.push({
+                id: customId,
+                name: title,
+                price: price,
+                qty: 1,
+                image: "image_301b45.jpg"
+            });
+
+            updateCartUI();
+            showToast(`Added Custom Combo to cart!`);
+            toggleCartDrawer(true);
+        }
+
+        // --- AUTH FORM SYSTEM ---
+        function switchAuthMode(mode) {
+            currentAuthMode = mode;
+            const nameField = document.getElementById('name-field-group');
+            const btnLogin = document.getElementById('auth-tab-login');
+            const btnReg = document.getElementById('auth-tab-register');
+            const submitBtn = document.getElementById('auth-submit-btn');
+
+            if (mode === 'register') {
+                nameField.classList.remove('hidden');
+                btnLogin.className = "text-gray-400 hover:text-white pb-2";
+                btnReg.className = "text-brand-orange border-b-2 border-brand-orange pb-2";
+                submitBtn.innerText = "Join VIP Club";
+            } else {
+                nameField.classList.add('hidden');
+                btnLogin.className = "text-brand-orange border-b-2 border-brand-orange pb-2";
+                btnReg.className = "text-gray-400 hover:text-white pb-2";
+                submitBtn.innerText = "Sign In";
+            }
+        }
+
+        function handleAuthSubmit(e) {
+            e.preventDefault();
+            const email = document.getElementById('auth-email').value;
+            showToast(currentAuthMode === 'login' ? `Welcome back, ${email}!` : `VIP Club Account created!`);
+            navigateTo('home');
+        }
+
+        // --- TOAST NOTIFICATION SYSTEM ---
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            const msgSpan = document.getElementById('toast-message');
+            msgSpan.innerText = msg;
+
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+                toast.classList.remove('translate-y-0', 'opacity-100');
+            }, 3000);
+        }
+
+        // --- MOBILE MENU SYSTEM ---
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        }
+
+        document.getElementById('mobile-menu-btn').addEventListener('click', toggleMobileMenu);
+
+        // --- INIT ---
+        window.addEventListener('DOMContentLoaded', () => {
+            renderHomeFeatured();
+            renderShopProducts();
+            calcCustomBox();
+            updateCartUI();
+
+        
+        });
+        // --- AD SLIDER ANIMATION ENGINE ---
+        let currentAdIndex = 0;
+        let adInterval = null;
+
+        function showAdSlide(index) {
+            const slides = document.querySelectorAll('.ad-slide');
+            const dots = document.querySelectorAll('.ad-dot');
+            if (!slides.length) return;
+
+            if (index >= slides.length) currentAdIndex = 0;
+            else if (index < 0) currentAdIndex = slides.length - 1;
+            else currentAdIndex = index;
+
+            slides.forEach((slide, i) => {
+                if (i === currentAdIndex) {
+                    slide.classList.add('active');
+                } else {
+                    slide.classList.remove('active');
+                }
+            });
+
+            dots.forEach((dot, i) => {
+                if (i === currentAdIndex) {
+                    dot.className = "ad-dot w-8 h-3 rounded-full bg-brand-orange transition-all duration-300";
+                } else {
+                    dot.className = "ad-dot w-3 h-3 rounded-full bg-white/40 hover:bg-white transition-all duration-300";
+                }
+            });
+        }
+
+        function changeAdSlide(step) {
+            showAdSlide(currentAdIndex + step);
+            resetAdTimer();
+        }
+
+        function goToAdSlide(index) {
+            showAdSlide(index);
+            resetAdTimer();
+        }
+
+        function startAdAutoSlide() {
+            adInterval = setInterval(() => {
+                showAdSlide(currentAdIndex + 1);
+            }, 4000);
+        }
+
+        function resetAdTimer() {
+            clearInterval(adInterval);
+            startAdAutoSlide();
+        }
+    </script>
+</body>
+</html>
